@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITextFieldDelegate {
 	
 	@IBOutlet var colorView: UIView!
 	
@@ -20,10 +20,9 @@ class ViewController: UIViewController {
 	@IBOutlet var greenSlider: UISlider!
 	@IBOutlet var blueSlider: UISlider!
 	
-	@IBOutlet var redValue: UITextField!
-	@IBOutlet var greenValue: UITextField!
-	@IBOutlet var blueValue: UITextField!
-	
+	@IBOutlet var redValueInput: UITextField!
+	@IBOutlet var greenValueInput: UITextField!
+	@IBOutlet var blueValueInput: UITextField!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -35,32 +34,84 @@ class ViewController: UIViewController {
 		greenValueLabel.text = String(greenSlider.value)
 		blueValueLabel.text = String(blueSlider.value)
 		
-		redValue.text = redValueLabel.text
-		greenValue.text = greenValueLabel.text
-		blueValue.text = blueValueLabel.text
+		redValueInput.delegate = self
+		greenValueInput.delegate = self
+		blueValueInput.delegate = self
+		redValueInput.text = redValueLabel.text
+		greenValueInput.text = greenValueLabel.text
+		blueValueInput.text = blueValueLabel.text
+		
+		setupTextFields()
+	}
+	
+	
+	func changeColorView() {
+		colorView.backgroundColor = UIColor(red: CGFloat(redSlider.value), green: CGFloat(greenSlider.value), blue: CGFloat(blueSlider.value), alpha: 1.0)
+	}
+	
+	func colorValueToString(color: Float) -> String {
+		return String(round(100*color)/100)
 	}
 
+
 	@IBAction func redSliderAction() {
-		redValueLabel.text = String(round(100*redSlider.value)/100)
-		colorView.backgroundColor = UIColor(red: CGFloat(redSlider.value), green: CGFloat(greenSlider.value), blue: CGFloat(blueSlider.value), alpha: 1.0)
-		redValue.text = String(round(100*redSlider.value)/100)
+		let value = colorValueToString(color: redSlider.value)
+		redValueLabel.text = value
+		redValueInput.text = value
+		changeColorView()
 	}
 	
 	@IBAction func greenSliderAction() {
-		greenValueLabel.text = String(round(100*greenSlider.value)/100)
-		colorView.backgroundColor = UIColor(red: CGFloat(redSlider.value), green: CGFloat(greenSlider.value), blue: CGFloat(blueSlider.value), alpha: 1.0)
-		greenValue.text = String(round(100*greenSlider.value)/100)
+		let value = colorValueToString(color: greenSlider.value)
+		greenValueLabel.text = value
+		greenValueInput.text = value
+		changeColorView()
 	}
 	
 	@IBAction func blueSliderAction() {
-		blueValueLabel.text = String(round(100*blueSlider.value)/100)
-		colorView.backgroundColor = UIColor(red: CGFloat(redSlider.value), green: CGFloat(greenSlider.value), blue: CGFloat(blueSlider.value), alpha: 1.0)
-		blueValue.text = String(round(100*blueSlider.value)/100)
-		
+		let value = colorValueToString(color: blueSlider.value)
+		blueValueLabel.text = value
+		blueValueInput.text = value
+		changeColorView()
 	}
 	
-	@IBAction func changeRedValue() {
-		redValueLabel.text = redValue.text
+	func changeColor() {
+		redValueLabel.text = redValueInput.text
+		greenValueLabel.text = greenValueInput.text
+		blueValueLabel.text = blueValueInput.text
+		
+		let floatRedValueInput = (redValueInput.text! as NSString).floatValue
+		let floatGreenValueInput = (greenValueInput.text! as NSString).floatValue
+		let floatBlueValueInput = (blueValueInput.text! as NSString).floatValue
+		
+		redSlider.value = floatRedValueInput
+		greenSlider.value = floatGreenValueInput
+		blueSlider.value = floatBlueValueInput
+		
+		changeColorView()
 	}
+		
+	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+		textField.resignFirstResponder()
+		changeColor()
+		return true
+	}
+	
+	func setupTextFields() {
+		let toolbar = UIToolbar()
+		let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItem.Style.done, target: self, action: #selector(doneButtonAction))
+		
+		toolbar.setItems([doneButton], animated: false)
+		toolbar.sizeToFit()
+		
+		redValueInput.inputAccessoryView = toolbar
+		greenValueInput.inputAccessoryView = toolbar
+		blueValueInput.inputAccessoryView = toolbar
+	}
+	
+	@objc func doneButtonAction() {
+		changeColor()
+		self.view.endEditing(true)
+	}
+	
 }
-
