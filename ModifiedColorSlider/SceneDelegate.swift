@@ -1,6 +1,6 @@
 //
 //  SceneDelegate.swift
-//  ColorSlider
+//  ModifiedColorSlider
 //
 //  Created by Valeria Khristinina on 01/02/2020.
 //  Copyright © 2020 Valeria Khristinina. All rights reserved.
